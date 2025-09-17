@@ -15,6 +15,10 @@ function App(){
 				<NavDropdown.Item onClick={() => navigate(`/fruit`)}>과일 1개</NavDropdown.Item>
 				<NavDropdown.Item onClick={() => navigate(`/fruit/list`)}>과일 목록</NavDropdown.Item>
 			</NavDropdown>
+			<NavDropdown title = {`기본 실습 문제`}>
+				<NavDropdown.Item onClick={() => navigate(`/bread`)}>메뉴 1개</NavDropdown.Item>
+				<NavDropdown.Item onClick={() => navigate(`/bread/list`)}>메뉴 목록</NavDropdown.Item>
+			</NavDropdown>
     </>
     );
 }
