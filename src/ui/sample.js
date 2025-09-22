@@ -1,6 +1,10 @@
 function App(){
-    return(
-			<></>
+
+	
+	return(
+			<>
+				샘플
+			</>
 		);
 }
 

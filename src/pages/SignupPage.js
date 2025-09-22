@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Alert, Button, Card, Col, Container, Form, FormControl, Row } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function App(){
 
@@ -127,9 +127,18 @@ return(
 									{errors.address}
 								</Form.Control.Feedback>
 							</Form.Group>
-							<Button variant="primary" type="submit" className="w-100">
-                                    회원 가입
-                        	</Button>
+							<Row>
+								<Col xs={8}>
+									<Button variant="primary" type="submit" className="w-100">
+                                    	회원 가입
+                        			</Button>
+								</Col>
+								<Col xs={4}>
+									<Link to={`/member/login`} className="btn btn-outline-secondary w-100">
+										로그인
+                        	        </Link>
+								</Col>
+							</Row>
 						</Form>
 					</Card.Body>
 				</Card>
