@@ -70,10 +70,8 @@ function App({user}){
 						// 주의) 상품을 삭제하려면 반드시 primary key인 상품의 아이디를 넘겨 주어야 합니다.	
 						try{ // 상품을 삭제 후 다시 상품 목록 페이지를 보여줍니다.
 							await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`);
-							// alert 함수(modal 통신)와 비동기 통신 사용시, 화면 갱신에 유의 하도록 합니다.
+							
 							alert(`${item.name} 상품이 삭제 되었습니다.`);
-							//삭제된 id를 배제하고, 상품 목록 state를 다시 갱신합니다.
-							setProduct(prev => prev.filter(p => p.id !== item.id));
 							navigate('/product/list')
 						}
 						catch(error){
@@ -92,7 +90,7 @@ function App({user}){
 	return(
 			<Container className="my-4">
 				<h1 className="my-4">상품 목록 페이지</h1>
-				<Link to={'/product/insert'}>
+				<Link to={`/product/insert `}>
 				 {user?.role === 'ADMIN' && (
 					<Button variant="primary" className="m-3">
 						상품 등록
@@ -117,7 +115,6 @@ function App({user}){
 								<Card.Body>
 									{/* borderCollapse : 각 셀의 테두리를 합칠 것인지, 별개로 보여 줄지를 설정하는 속성 */}
 									<table style={{width:'100%', borderCollapse:'collapse', border:'none'}}>
-										<tbody>
 										<tr>
 											<td style={{width:'70%', padding: '4px', border:'none'}}>
 												<Card.Title>{item.name}({item.id})</Card.Title>
@@ -133,7 +130,6 @@ function App({user}){
 												<Card.Text>가격 : {item.price.toLocaleString()}원</Card.Text>
 											</td>	
 										</tr>
-										</tbody>
 									</table>
 									
 								</Card.Body>
