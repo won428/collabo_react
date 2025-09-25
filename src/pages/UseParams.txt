@@ -1,0 +1,15 @@
+// useParams 훅은 url에 들어있는 동적 파라미터의 값을 챙길때 사용합니다.
+import { useParams } from "react-router-dom";
+function App(){
+	const {id} = useParams();
+	console.log(`수정할 상품 번호 : ${id}`)
+
+	
+	return(
+			<>
+				상품 수정
+			</>
+		);
+}
+
+export default App;

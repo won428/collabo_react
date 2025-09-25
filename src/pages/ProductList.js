@@ -50,7 +50,7 @@ function App({user}){
 					className="mb-2"
 					onClick={(event)=>{
 						event.stopPropagation();
-						alert('수정');
+						navigate(`/product/update/${item.id}`);
 					}}
 				>수정
 				</Button>
