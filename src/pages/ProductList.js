@@ -113,6 +113,7 @@ function App({user}){
 									src = {`${API_BASE_URL}/images/${item.image}`}
 									alt = {item.name}
 									style={{width: '100%', height: '200px'}}
+									onClick={()=>navigate(`/product/detail/${item.id}`)}
 								/>
 								<Card.Body>
 									{/* borderCollapse : 각 셀의 테두리를 합칠 것인지, 별개로 보여 줄지를 설정하는 속성 */}

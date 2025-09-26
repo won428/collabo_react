@@ -9,6 +9,7 @@ import LoginPage from './../pages/LoginPage';
 import ProductList from './../pages/ProductList';
 import ProductInsertForm from './../pages/ProductInsertForm';
 import ProductUpdateForm from './../pages/ProductUpdateForm';
+import ProductDetail from './../pages/ProductDetail';
 // 이 파일은 라우팅 정보를 담고 있는 파일입니다.
 // 이러한 파일을 네트워크에서는 routing table이라고 합니다.
 function App({user, handleLoginSuccess}){
@@ -28,6 +29,8 @@ function App({user, handleLoginSuccess}){
 					<Route path="product/insert" element={<ProductInsertForm/>} /> 
 					{/* 기호 ":id"는 변수처럼 동작하는 매개변수이고, ProductUpdateForm.js 파일에서 참조합니다. */}
 					<Route path="product/update/:id" element={<ProductUpdateForm/>} /> 
+					{/* 비로그인시 장바구니와 구매하기 기능은 선택이 불가능해야 하므로, user를 프롭스로 넘겨줍니다. */}
+					<Route path="product/detail/:id" element={<ProductDetail user={user}/>} /> 
         </Routes>
     );    
 }
