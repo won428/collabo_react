@@ -14,6 +14,7 @@ function App({user}){
 	const {id} = useParams();
 	// 로딩 상태를 의미하는 state로, 값이 true이면 현재 로딩 중입니다.
 	const [loading, setLoading] = useState(true);
+	const [quantity, setQuantity] = useState(0);
 	
 	const navigate = useNavigate();
 	
@@ -54,6 +55,50 @@ function App({user}){
 			</Container>
 		);
 	}
+
+	// 장바구니 관련 코딩
+	// 수량 체인지 관련 이벤트 핸들서 함수 정의
+	const QuantityChange = (event) => {
+		// parseInt() 메소드는 정수형으로 생긴 문자열( ex) "123" )을 정수 값으로 변환해 줍니다.
+		const newValue = parseInt(event.target.value)
+		setQuantity(newValue);
+	};
+
+	// 사용자가 수량을 입력하고, '장바구니' 버튼을 눌렀습니다.
+	const addToCart = async () => {
+		if(quantity < 1){
+			alert(`구매 수량은 1개 이상이어야 합니다.`); 
+			return ;
+		}else if(isNaN(quantity)){
+			alert(`수량을 입력해주세요`)
+			return ;
+		}	
+		//alert(`${product.name} ${quantity}개를 장바구니에 담았습니다.`)
+
+		try{
+			const url = `${API_BASE_URL}/cart/insert`;
+			// 카트에 담을 내용은 회원 id, 상품 id, 수량 입니다. 이 데이터를 보내기 위해서 객체로 만들어 스프링으로 보냅니다.
+			// BackEnd 영역에서 CartProductDto라는 클래스와 매치됩니다.
+			const parameters = {
+				memberId: user.id,
+					productId: product.id,
+					quantity: quantity
+			};
+			const response = await axios.post(url, parameters);
+
+			alert(response.data);
+			navigate('/product/list') // 상품 목록 페이지로 이동
+
+		}catch(error){
+			console.log('오류 발생 : ' + error)
+			if(error.response){
+				alert('장바구니 추가 실패')
+				console.log(error.response.data)
+			}
+		}
+	}
+
+
 
 	
 	return(
@@ -110,7 +155,7 @@ function App({user}){
 											</Col>
 											<Col xs={5} className="text-center" >
 												{/* 구매 수량은 최소 1이상으로 설정했고, user모드에 따라서 분기 코딩했습니다. */}
-												<Form.Control type="number" min="1" disabled={!user}/>
+												<Form.Control type="number" min="1" disabled={!user} value={quantity} onChange={QuantityChange}/>
 											</Col>
 										</Form.Group>
 
@@ -118,7 +163,16 @@ function App({user}){
 											<Button variant="primary" className="me-3 px-4" onClick={()=>{navigate("/product/list")}}>
 												이전 목록
 											</Button>
-											<Button variant="success" className="me-3 px-4">
+											<Button variant="success" className="me-3 px-4" 
+												onClick={()=>{
+													if(!user){
+														alert('로그인이 필요한 서비스입니다.')
+														return navigate('/member/login')
+													}else{
+														addToCart();
+													}
+												}}
+											>
 												장바구니
 											</Button>
 											<Button variant="danger" className="me-3 px-4" >
