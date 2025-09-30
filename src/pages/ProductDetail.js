@@ -92,12 +92,46 @@ function App({user}){
 		}catch(error){
 			console.log('오류 발생 : ' + error)
 			if(error.response){
-				alert('장바구니 추가 실패')
+				alert(error.response.data)
 				console.log(error.response.data)
 			}
 		}
 	}
 
+	const buyNow = async () =>{
+		try {
+            const url = `${API_BASE_URL}/order`;
+            // 스프링 부트의 OrderDto, OrderItemDto 클래스와 연관이 있습니다.
+            // 주의) parameters 작성시 key의 이름은 OrderDto의 변수 이름과 동일하게 작성해야 합니다.
+			// 상품 상세보기 페이지에서는 무조건 1개의 상품만 주문을 할 수 있습니다.
+            if(quantity < 1){
+				alert('수량을 1개 이상 선택해 주셔야 합니다.');
+				return;
+			}
+			
+			const parameters = {
+                memberId: user.id,
+                status: 'PENDING',
+                orderItems:[{
+					productId: product.id,
+					quantity: quantity
+				}] 
+            };
+            
+            console.log('주문할 데이터 정보')
+            console.log(parameters);
+
+            const response = await axios.post(url, parameters) ;
+            alert(response.data)
+			alert(`${product.name} ${quantity}개를 주문하였습니다.`)
+
+           navigate('/product/list') // 목록 페이지로 이동
+            
+        } catch (error) {
+            console.log('주문 기능 실패');
+            console.log(error);
+        };
+	}
 
 
 	
@@ -175,8 +209,18 @@ function App({user}){
 											>
 												장바구니
 											</Button>
-											<Button variant="danger" className="me-3 px-4" >
-												구매하기
+											<Button variant="danger" className="me-3 px-4" 
+												onClick={()=>{
+													if(!user){
+														alert('로그인이 필요한 서비스입니다.')
+														return navigate('/member/login')
+													}else{
+														buyNow();
+													}
+												}}
+											
+											>
+												주문하기
 											</Button>
 										</div>
 

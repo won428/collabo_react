@@ -1,8 +1,8 @@
 import axios from "axios";
 
 import { useEffect, useState } from "react";
-import { Button, Col, Container, Row, Image, Table, Form } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Button, Card, Col, Container, Row, Image, Table, Form } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 
 import { API_BASE_URL } from "../config/config";
 
@@ -75,143 +75,6 @@ function App({ user }) {
         setOrderTotalPrice(total); // State 업데이트
     };
 
-    // 개별 체크 박스를 클릭하였습니다.
-    const toggleCheckBox = (cartProductId) => {
-        console.log(`카트 상품 아이디 : ${cartProductId}`);
-
-        setCartProducts((previous) => {
-            // !product.checked는 체크 상태를 toggle 시키는 역할을 합니다.
-            const updatedProducts = previous.map((product) =>
-                product.cartProductId === cartProductId
-                    ? { ...product, checked: !product.checked }
-                    : product
-            );
-
-            refreshOrderTotalPrice(updatedProducts);
-            return updatedProducts;
-        });
-    };
-
-    // 카트 상품 목록에서 특정 상품의 구매 수량을 변경하였습니다.
-    const changeQuantity = async (cartProductId, quantity) => {
-        // NaN : Not A Number
-        if (isNaN(quantity)) { // 숫자 형식이 아니면
-            // 값을 0으로 변경한 다음, 함수를 반환하도록 합니다.
-            setCartProducts((previous) => {
-                previous.map((product) =>
-                    product.cartProductId === cartProductId
-                        ? { ...product, quantity: 0 }
-                        : product
-                );
-            });
-
-            alert('변경 수량은 최소 1이상이어야 합니다.');
-            return;
-        }
-
-        try {
-            // 사용 예시 : 100번 항목을 10개로 수정해주세요.
-            // http://localhost:9000/cart/edit/100?quantity=10
-            const url = `${API_BASE_URL}/cart/edit/${cartProductId}?quantity=${quantity}`;
-
-            // patch 동작은 전체가 아닌 일부 데이터를 변경하고자 할때 사용됩니다.
-            // 스프링의 WebConfig 클래스안의 addCorsMappings() 메소드를 참조하시길 바랍니다.
-            const response = await axios.patch(url);
-
-            console.log(response.data || '');
-
-            // cartProducts의 수량 정보를 갱신합니다.
-            setCartProducts((previous) => {
-                const updatedProducts = previous.map((product) =>
-                    product.cartProductId === cartProductId
-                        ? { ...product, quantity: quantity }
-                        : product
-                );
-
-                refreshOrderTotalPrice(updatedProducts);
-                return updatedProducts;
-            });
-
-        } catch (error) {
-            console.log('카트 상품 수량 변경 실패');
-            console.log(error);
-        }
-    };
-
-    // 선택된 카트 상품 아이디를 이요하여 해당 품목을 목록에서 배제 합니다.
-    const deleteCartProduct = async (cartProductId) => {
-        const isConfiremed = window.confirm('해당 카트 상품을 정말로 삭제하시겠습니까?')
-
-        if(isConfiremed){
-            console.log('삭제할 카트 상품 아이디 : ' + cartProductId);
-            try {
-                const url = `${API_BASE_URL}/cart/delete/${cartProductId}`;
-                const response = await axios.delete(url);
-
-                // 카트 상품 목록을 갱신하고, 요금을 다시 계산합니다.
-                setCartProducts((previous)=>{
-                    const updatedProducts = previous.filter((bean)=> bean.cartProductId !== cartProductId);
-
-                    refreshOrderTotalPrice(updatedProducts);
-                    return updatedProducts
-                })
-                
-                alert(response.data);
-                
-            } catch (error) {
-                console.log('카트 상품 삭제 동작 오류');
-                console.log(error)
-            }
-        }else{
-            alert('"카트 상품" 삭제를 취소하셨습니다.')
-        }
-    }
-
-    // 사용자가 '주문하기' 버튼을 클릭하였습니다.
-    const makeOrder = async () => {
-        // 체크 박스가 on 상태인 것만 필터링합니다.
-        const selectedProducts = cartProducts.filter((bean)=> bean.checked);
-
-        if(selectedProducts.length === 0){
-            alert('주문할 상품을 선택해 주세요.')
-            return ;
-        }
-        
-        try {
-            const url = `${API_BASE_URL}/order`;
-            // 스프링 부트의 OrderDto, OrderItemDto 클래스와 연관이 있습니다.
-            // 주의) parameters 작성시 key의 이름은 OrderDto의 변수 이름과 동일하게 작성해야 합니다.
-            const parameters = {
-                memberId: user.id,
-                status: 'PENDING',
-                orderItems: selectedProducts.map((product)=>({
-                    cartProductId: product.cartProductId,
-                    productId: product.productId,
-                    quantity: product.quantity
-                }))
-            };
-            
-            console.log('주문할 데이터 정보')
-            console.log(parameters);
-
-            const response = await axios.post(url, parameters) ;
-            alert(response.data)
-
-            // 방금 주문한 품목은 이제 장바구니 목록에서 제거되어야 합니다.
-            setCartProducts((previous)=> // state로 관리하는 가장 최근 값을 previous라는 이름으로 참조해서 사용
-                previous.filter((product)=> !product.checked)
-            )
-
-            setOrderTotalPrice(0)// 총 주문 금액 초기화
-            
-        } catch (error) {
-            console.log('주문 기능 실패');
-            console.log(error);
-        };
-        
-        
-    };
-
     return (
         <Container className="mt-4">
             <h2 className="mb-4">
@@ -222,7 +85,7 @@ function App({ user }) {
             <Table striped bordered>
                 <thead>
                     <tr>
-                        <th style={{ ...thStyle, width: '30%' }}>
+                        <th style={thStyle}>
                             {/* `전체 선택` 체크 박스의 체크 상태(boolean)를 toggleAllCheckBox 함수에 전달 */}
                             <Form.Check
                                 type="checkbox"
@@ -241,12 +104,10 @@ function App({ user }) {
                         cartProducts.map((product) => (
                             <tr key={product.cartProductId}>
                                 <td className="text-center align-middle">
-                                    {/* 어떤 체크인지 식별하기 위하여 toggleCheckBox 함수에 cartProductId를 넘기도록 합니다. */}
                                     <Form.Check
                                         type="checkbox"
                                         checked={product.checked}
-                                        style={{ transform: "scale(1.4)", cursor: "pointer" }}
-                                        onChange={() => toggleCheckBox(product.cartProductId)}
+                                        onChange={``}
                                     />
                                 </td>
                                 <td className="text-center align-middle">
@@ -270,11 +131,7 @@ function App({ user }) {
                                         type="number"
                                         min={1}
                                         value={product.quantity}
-                                        onChange={(event) =>
-                                            changeQuantity(
-                                                product.cartProductId,
-                                                parseInt(event.target.value)
-                                            )}
+                                        onChange={``}
                                         style={{ width: '80px', margin: '0 auto' }}
                                     />
                                 </td>
@@ -283,7 +140,7 @@ function App({ user }) {
                                 </td>
                                 <td className="text-center align-middle">
                                     <Button variant="danger" size="sm"
-                                        onClick={()=>deleteCartProduct(product.cartProductId)}
+                                        onClick={``}
                                     >
                                         삭제
                                     </Button>
@@ -291,7 +148,7 @@ function App({ user }) {
                             </tr>
                         ))
                     ) : (
-                        <tr><td colSpan={5}>장바구니가 비어 있습니다.</td></tr>
+                        <tr><td>장바구니가 비어 있습니다.</td></tr>
                     )}
                 </tbody>
             </Table>
@@ -299,7 +156,7 @@ function App({ user }) {
             {/* 좌측 정렬(text-start), 가운데 정렬(text-center), 우측 정렬(text-end) */}
             <h3 className="text-end mt-3">총 주문 금액 : {orderTotalPrice.toLocaleString()}원</h3>
             <div className="text-end">
-                <Button variant="primary" size="lg" onClick={makeOrder}>
+                <Button variant="primary" size="lg" onClick={``}>
                     주문하기
                 </Button>
             </div>

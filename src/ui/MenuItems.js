@@ -23,7 +23,7 @@ function App({appName, user, handleLogout}){
                 return(
                 <>
                 <Nav.Link onClick={()=> navigate(`/cart/list`)}>장바구니</Nav.Link>
-                <Nav.Link onClick={()=> navigate(``)}>주문 내역</Nav.Link>
+                <Nav.Link onClick={()=> navigate(`/order/list/${user.id}`)}>주문 내역</Nav.Link>
                 <Nav.Link onClick={handleLogout}>로그아웃</Nav.Link>
                 </>);
                 
