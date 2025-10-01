@@ -38,7 +38,7 @@ const SignupAction = async (event) => {
 
 		if(reponse.status === 200){ // 스프링의 MemberController 파일 참조
 			alert('회원가입 성공');
-			navigate('member/login');
+			navigate('/member/login');
 		}
 
 	}catch(error){ // error : 예외 객체

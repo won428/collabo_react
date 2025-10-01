@@ -35,6 +35,11 @@ function App({ user }) {
             console.log(response.data);
 
             setCartProducts(response.data || []);
+            if(cartProducts.length < 0){
+            alert(`'카트 상품' 정보가 존재하지 않아서 상품 목록 페이지로 이동합니다.`);
+            navigate('/product/list');
+            }
+            
 
         } catch (error) {
             console.log('오류 정보');
