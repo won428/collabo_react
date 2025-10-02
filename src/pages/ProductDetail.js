@@ -66,6 +66,7 @@ function App({user}){
 
 	// 사용자가 수량을 입력하고, '장바구니' 버튼을 눌렀습니다.
 	const addToCart = async () => {
+		
 		if(quantity < 1){
 			alert(`구매 수량은 1개 이상이어야 합니다.`); 
 			return ;
@@ -136,6 +137,7 @@ function App({user}){
 
 	
 	return(
+			
 			<>
 				<Container className="my-4">
 					<Card>
