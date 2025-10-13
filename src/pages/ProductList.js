@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, ButtonGroup, Card, Col, Container, Pagination, Row } from "react-bootstrap";
+import { Button, ButtonGroup, Card, Col, Container, Form, Pagination, Row } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,8 +29,12 @@ function App({user}){
 		pageCount : 10, // 페이지 하단 버튼의 개수(10개)
 		beginPage : 0, // 페이징 시작 번호
 		endPage : 0, // 페이징 끝 번호
-		pagingStatus :'' // "pageNumber/ totalPages 페이지"
-
+		pagingStatus :'', // "pageNumber/ totalPages 페이지"
+		// 자바의 searchDto 연관 필드(field)
+		searchDateType: 'all', // 기간 검색 콤보 박스
+		category:'', // 검색하고자 하는 특정 카테고리 콤보 박스
+		searchMode: '', // 상품 검색 모드 콤보박스_상품 이름(name) 또는 상품 설명(description)
+		searchKeyword:'', // 검색 키워드 입력 상자
 	});
 
 	
@@ -40,8 +44,13 @@ function App({user}){
 		const parameters = {
 			params:{
 			pageNumber: paging.pageNumber,
-			pageSize: paging.pageSize		
-			}
+			pageSize: paging.pageSize,
+			searchDateType: paging.searchDateType, 
+			category: paging.category,
+			searchMode: paging.searchMode,
+			searchKeyword: paging.searchKeyword		
+			},
+			withCredentials: true
 		};
 		axios
 			.get(url, parameters)
@@ -84,7 +93,7 @@ function App({user}){
 			.catch((error)=>{
 				console.log(error)
 			});
-	},[paging.pageNumber]);
+	},[paging.pageNumber, paging.searchDateType, paging.category, paging.searchMode, paging.searchKeyword]);
 
 	const navigate = useNavigate();
 	// 이 함수는 관리자 모드일때 보여주는 '수정'과 '삭제'를 위한 버튼을 생성해주는 함수입니다.
@@ -152,6 +161,80 @@ function App({user}){
 				</Link>
 				
 				{/* 필드 검색 영역 */}
+				<Form className="p-3">
+					<Row className="mb-3">
+						{/* 검색 기간 선택 */}
+						<Col md={2}> 
+				 			<Form.Select 
+							name="searchDateType" 
+							value={paging.searchDateType} 
+							onChange={(e)=>setPaging((previous)=>({...previous, searchDateType:e.target.value}))}
+							>
+								<option value='ALL'>전체기간</option>
+								<option value='1d'>1일</option>
+								<option value='1w'>1주일</option>
+								<option value='1m'>1개월</option>
+								<option value='6m'>6개월</option>
+							</Form.Select>
+						</Col>
+
+						{/* 카테고리 선택 */}
+						<Col md={2}> 
+				 			<Form.Select 
+							name="category" 
+							value={paging.category} 
+							onChange={(e)=>setPaging((previous)=>({...previous, category:e.target.value}))}
+							>
+								<option value='ALL'>전체 카테고리</option>
+								<option value='BEVERAGE'>음료</option>
+								<option value='BREAD'>빵</option>
+								<option value='CAKE'>케이크</option>
+							</Form.Select>
+						</Col>
+						{/* 검색 모드 선택 */}
+						<Col md={2}> 
+				 			<Form.Select 
+							name="searchMode" 
+							value={paging.searchMode} 
+							onChange={(e)=>setPaging((previous)=>({...previous, searchMode:e.target.value}))}
+							>
+								<option value='all'>전체 검색</option>
+								<option value='name'>상품명</option>
+								<option value='description'>상품 설명</option>
+							</Form.Select>
+						</Col>
+
+						{/* 검색어 입력란 */}
+				 		<Col md={4}> 
+							<Form.Control
+								name="searchKeyword"
+								type="text"
+								placeholder="검색어를 입력해 주세요."
+								value={paging.searchKeyword}
+								onChange={(e)=>{
+									e.preventDefault();
+									setPaging((previous)=>({...previous, searchKeyword:e.target.value}))
+								}}
+							/>
+						</Col>
+						{/* 페이징 상태 보여주기 */}
+				 		<Col md={2}> 
+							<Form.Control
+								as="input"
+								type="text"
+								value={paging.pagingStatus}
+								disabled
+								style={{
+                                fontSize: '15px',
+                                backgroundColor: '#f0f0f0',
+                                textAlign: 'center', // 텍스트 가운데 정렬
+                                width: '100%', // 필요한 너비 설정
+                                margin: '0 auto', // 가운데 정렬을 위한 자동 여백
+                            }}
+							/>
+						</Col>
+					</Row>
+				</Form>
 				
 				{/* 자료 보여주는 영역 */}
 				<Row>
