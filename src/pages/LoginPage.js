@@ -21,13 +21,36 @@ const LoginAction = async (event) => {
 
     try{
         const url = `${API_BASE_URL}/member/login`
-        const parameters= {email, password};
+    	// const parameters= {email, password};
+		
+		// // 스프링 부트가 넘겨주는 정보는 Map<String, Object> 타입 입니다.
+        // const response = await axios.post(url, parameters);
+
+        // // message에는 '로그인 성공 여부'를 알리는 내용, member에는 로그인 한 사람의 객체 정보가 반환 됩니다.
+        // const {message, member} = response.data;
+		
+		
+		
+		// axios는 기본 값으로 json 형식을 전송하지만, 스프링 시큐리티가 이를 처리하지 못합니다.
+		// 대신 form-urlencoded 타입으로 전송해 주어야 합니다.
+		// URLSearchParams는 자바 스크립트에서 QueryString을 다루기 위한 내장 객체 입니다.
+		const parameters= new URLSearchParams() ;
+		parameters.append('email',email);
+		parameters.append('password',password);
+
         
-        // 스프링 부트가 넘겨주는 정보는 Map<String, Object> 타입 입니다.
-        const response = await axios.post(url, parameters);
+		// 스프링 부트가 넘겨주는 정보는 Map<String, Object> 타입 입니다.
+        const response = await axios.post(url, parameters,{
+			headers: {
+				'Content-Type':'application/x-www-form-urlencoded'
+			},
+			withCredentials: true // 세션 기반 인증시 필수
+		});
 
         // message에는 '로그인 성공 여부'를 알리는 내용, member에는 로그인 한 사람의 객체 정보가 반환 됩니다.
         const {message, member} = response.data;
+
+		
 
         if(message === 'success'){ // 자바에서 map.put("message", "로그인 성공") 식으로 코딩을 했습니다.
             console.log('로그인 한 사람의 정보');
