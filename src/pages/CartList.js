@@ -121,7 +121,7 @@ function App({ user }) {
 
             // patch 동작은 전체가 아닌 일부 데이터를 변경하고자 할때 사용됩니다.
             // 스프링의 WebConfig 클래스안의 addCorsMappings() 메소드를 참조하시길 바랍니다.
-            const response = await axios.patch(url);
+            const response = await axios.patch(url,{},{withCredentials:true});
 
             console.log(response.data || '');
 

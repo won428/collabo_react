@@ -19,18 +19,32 @@ function App({user}){
 	const navigate = useNavigate();
 	
 	useEffect(()=>{
+		if(!user){
+			alert('로그인이 필요한 서비스입니다.');
+			navigate('/member/login');
+			return;
+		}
+
+
 		const url = `${API_BASE_URL}/product/detail/${id}`;
 
 		axios
-			.get(url)
+			.get(url, {withCredentials:true}) // 쿠키, 세션 포함 옵션
 			.then((response)=>{
 				setProduct(response.data);
 				setLoading(false);
 			})
 			.catch((error)=>{
 				console.log({error})
+				if(error.response && error.response.status === 401){ // 401(UnAuthrized)
+					alert("로그인이 필요한 서비스입니다.");
+					navigate('/member/login'); // 로그인 페이지로 이동하기
+				}else{
+				console.log({error})
 				alert("상품 정보를 불러 오는 중에 오류가 발생하였습니다.");
 				navigate(-1); // 이전 페이지로 이동하기
+				}
+
 			})
 	},[id]);
 
@@ -85,7 +99,7 @@ function App({user}){
 					productId: product.id,
 					quantity: quantity
 			};
-			const response = await axios.post(url, parameters);
+			const response = await axios.post(url, parameters, {withCredentials: true});
 
 			alert(response.data);
 			navigate('/product/list') // 상품 목록 페이지로 이동
@@ -122,7 +136,7 @@ function App({user}){
             console.log('주문할 데이터 정보')
             console.log(parameters);
 
-            const response = await axios.post(url, parameters) ;
+            const response = await axios.post(url, parameters, {withCredentials: true}) ;
             alert(response.data)
 			alert(`${product.name} ${quantity}개를 주문하였습니다.`)
 

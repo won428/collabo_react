@@ -3,6 +3,7 @@ import { Button, ButtonGroup, Card, Col, Container, Form, Pagination, Row } from
 import { API_BASE_URL } from "../config/config";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+axios.defaults.withCredentials = true;  
 /*
 step 01
 상품 목록을 상품 아이디가 역순으로 들어가있는 리스트형태의 데이터를 받아 읽어서 화면에 전체를 보여줍니다.
@@ -129,7 +130,9 @@ function App({user}){
 						}
 						// 주의) 상품을 삭제하려면 반드시 primary key인 상품의 아이디를 넘겨 주어야 합니다.	
 						try{ // 상품을 삭제 후 다시 상품 목록 페이지를 보여줍니다.
-							await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`);
+							await axios.delete(`${API_BASE_URL}/product/delete/${item.id}`,
+								{withCredentials:true}
+							);
 							// alert 함수(modal 통신)와 비동기 통신 사용시, 화면 갱신에 유의 하도록 합니다.
 							alert(`${item.name} 상품이 삭제 되었습니다.`);
 							//삭제된 id를 배제하고, 상품 목록 state를 다시 갱신합니다.

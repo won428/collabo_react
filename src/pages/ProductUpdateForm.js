@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
 import { useNavigate, useParams } from "react-router-dom";
+axios.defaults.withCredentials = true; 
 
 /* 
 상품 수정 페이지 입니다.
@@ -54,7 +55,7 @@ SubmitAction 함수
 
 */
 
-function App(){
+function App({user}){
 	const {id} = useParams();
 	console.log(`수정할 상품 번호 : ${id}`)
 
@@ -68,11 +69,18 @@ function App(){
 	// product는 백엔드에게 넘겨줄 상품 등록 정보를 담고 있는 객체
 	const[product, setProduct] = useState(initial_value);
 
+	useEffect(()=>{
+		if(!user || user.role !== 'ADMIN'){
+		alert(`${comment} 기능은 관리자만 접근이 가능합니다.`);
+		navigate('/')
+		}
+	}, [user, navigate]); 
+
 	//id를 이용하여 기존에 입력한 정보 가져오기
 	useEffect(()=>{
 		const url = `${API_BASE_URL}/product/update/${id}`;
 		axios
-			.get(url)
+			.get(url, {withCredentials:true})
 			.then((response)=>{
 				setProduct(response.data);
 			})
@@ -136,10 +144,13 @@ function App(){
 			// Content-Type(Mime Type) : 문서의 종류가 어떠한 종류인지를 알려주는 항목
 			// 예시 : 'text/html', 'image/jpeg', 'application/json' 등등
 			// 이 문서는 json 형식의 파일입니다.
-			const config = {headers : {'Content-Type' : 'application/json'}};
+			const config = {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            };
 			
 			// put() 메소드는 리소스를 "수정"하고자 할 때 사용하는 메소드입니다.
-			const response = await axios.put(url,parameters,config);
+			const response = await axios.put(url,parameters,config,{withCredentials:true});
 
 			console.log(`상품 수정 : [${response.data}]`)
 			alert('상품이 성공적으로 수정 되었습니다.');
@@ -168,7 +179,7 @@ function App(){
 								type="text"
 								placeholder="이름을 입력해 주세요."
 								name="name"
-								value={product.name}
+								value={product.name || ''}
 								onChange={ControlChange}
 								required
 							/>
@@ -179,7 +190,7 @@ function App(){
 								type="text"
 								placeholder="가격을 입력해 주세요."
 								name="price"
-								value={product.price}
+								value={product.price||''}
 								onChange={ControlChange}
 								required
 							/>
@@ -189,7 +200,7 @@ function App(){
 						<Form.Label>카테고리</Form.Label>
 							<Form.Select 
 								name="category"
-								value={product.category}
+								value={product.category||''}
 								onChange={ControlChange}
 								required>
 									{/* 자바의 Enum 열거형 상수 타입에서 사용한 대문자를 반드시 사용해야 합니다. */}
@@ -206,7 +217,7 @@ function App(){
 								type="text"
 								placeholder="재고를 입력해 주세요."
 								name="stock"
-								value={product.stock}
+								value={product.stock||''}
 								onChange={ControlChange}
 								required
 							/>
@@ -227,7 +238,7 @@ function App(){
 								type="text"
 								placeholder="상품 설명을 입력해 주세요."
 								name="description"
-								value={product.description}
+								value={product.description||''}
 								onChange={ControlChange}
 								required
 							/>

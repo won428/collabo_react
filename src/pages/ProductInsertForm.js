@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Container, Form } from "react-bootstrap";
 import { API_BASE_URL } from "../config/config";
 import { useNavigate } from "react-router-dom";
@@ -33,11 +33,21 @@ SubmitAction 함수
 
 */
 
-function App(){
-	const comment = '상품 등록';
+function App({user}){
 	
 	const navigate = useNavigate();
-
+	const comment = '상품 등록';
+	
+	useEffect(()=>{
+		if(!user || user.role !== 'ADMIN'){
+		alert(`${comment} 기능은 관리자만 접근이 가능합니다.`);
+		navigate('/')
+		}
+	}, [user, navigate]);
+	
+	
+	
+	
 	const initial_value = {
 		name:'', price:'',category:'',stock:'',image:'',description:''
 	}; // 상품 객체 정보
@@ -97,7 +107,10 @@ function App(){
 			// Content-Type(Mime Type) : 문서의 종류가 어떠한 종류인지를 알려주는 항목
 			// 예시 : 'text/html', 'image/jpeg', 'application/json' 등등
 			// 이 문서는 json 형식의 파일입니다.
-			const config = {headers : {'Content-Type' : 'application/json'}};
+			const config = {
+                headers: { 'Content-Type': 'application/json' },
+                withCredentials: true
+            };
 
 			const response = await axios.post(url,parameters,config);
 
